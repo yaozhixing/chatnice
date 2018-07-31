@@ -179,6 +179,7 @@ a:hover{color:#f41515;}
         height: 100%;
         position: relative;
         display: flex;
+        background: #fff;
     }
     .chat-wrap{
         width: 100%;
@@ -212,6 +213,9 @@ a:hover{color:#f41515;}
     }
     .msgline .msg-tx{
         font-size: 14px;
+    }
+    .chat-text{
+        height: 52px;
     }
 }
 
