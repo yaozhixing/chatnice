@@ -62,6 +62,7 @@ a:hover{color:#f41515;}
     font-size: 16px;
     color: #fff;
     text-align: center;
+    position: relative;
     background: -webkit-linear-gradient(left, #4c8cfe , #1fd2ff); /* Safari 5.1 - 6.0 */
     background: -o-linear-gradient(right, #4c8cfe, #1fd2ff); /* Opera 11.1 - 12.0 */
     background: -moz-linear-gradient(right, #4c8cfe, #1fd2ff);
@@ -69,6 +70,19 @@ a:hover{color:#f41515;}
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
 }
+.editname{
+    width:30px;
+    height:30px;
+    display: block;
+    border-radius: 50%;
+    border:1px solid #fff;
+    position: absolute;
+    top:8px;
+    left:20px;
+    background: url(../images/editname.png) center center no-repeat;
+    background-size: 20px 20px;
+}
+
 .chat-main{
     height:490px;
     padding: 15px;
@@ -99,13 +113,16 @@ a:hover{color:#f41515;}
     background-color: #0ea5d6;
 }
 .join-chat{
-    width: 160px;
     height:24px;
+    display: flex;
+    justify-content:center;
+    margin-bottom: 10px;
+}
+.join-chat p{
     line-height: 24px;
-    text-align: center;
-    margin: 0 auto 10px;
     background-color: #dfdfdf;
     border-radius: 3px;
+    padding: 0px 10px;
 }
 
 .msgline{
@@ -217,6 +234,10 @@ a:hover{color:#f41515;}
     .chat-text{
         height: 52px;
     }
+    .editname{
+        top:4px;
+        left:15px
+    }
 }
 
 @media screen and (max-width: 320px) {
@@ -225,5 +246,10 @@ a:hover{color:#f41515;}
     }
     .chat-text{
         height: 48px;
+    }
+    .editname{
+        width:26px;
+        height: 26px;
+        background-size: 20px 20px;
     }
 }

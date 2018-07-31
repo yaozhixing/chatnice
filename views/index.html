@@ -9,7 +9,10 @@
 </head>
 <body>
 <div class="chat-wrap">
-    <div class="chat-top">瞎扯淡聊天室</div>
+    <div class="chat-top">
+        <p>瞎扯淡聊天室</p>
+        <a href="javascript:void(0)" class="editname js-editname" title="修改昵称"></a>
+    </div>
 
     <div class="chat-main">
 
@@ -74,9 +77,10 @@
                 }
             })
 
-
             //发送验证消息
             function sendmsg(){
+                var localname = ''+localStorage.getItem("username");
+
                 var text = $(".f-text").val();
 
                 if (text == ''){
@@ -85,26 +89,57 @@
                     return;
                 }
                 //将消息发送给服务器
-                socket.emit("msg", {text,name});
+                socket.emit("msg", {text,localname});
                 $(".f-text").val("");
             }
 
             //收到服务器-发送消息事件
             socket.on("msg",function (res) {
-                addmsg(res.msg.text,res.msg.name);
+                console.log(res);
+                addmsg(res.msg.text,res.msg.localname);
+            })
+
+            
+            //修改昵称
+            $(".chat-top").on("click",".js-editname",function () {
+                var oldname = localStorage.getItem("username");
+                var ename = prompt("请输入您的昵称：");
+
+                if( ename=='' || ename==null ){
+                    alert("请输入要更改的昵称")
+                }
+                else{
+                    localStorage.setItem("username",ename)
+
+                    //发送昵称
+                    socket.emit("editname", {ename,oldname});
+                    document.title = ename + "的群聊！";
+                }
+            })
+
+            //收到服务端发来的事件
+            socket.on("editname", function (u) {
+                edituser(u.newname.oldname,u.newname.ename,);
             })
 
 
             //添加用户
             function adduser(user) {
-                var userhtml = '<div class="join-chat">' + user + '加入了群聊</div>';
+                var userhtml = '<div class="join-chat"><p>' + user + '加入了群聊</p></div>';
                 $(".chat-main").append(userhtml);
+            }
+
+            //修改昵称
+            function edituser(oldname,newname) {
+                var edithtml = '<div class="join-chat"><p>[' + oldname + ']修改了昵称:[ ' + newname + ' ]</p></div>';
+                $(".chat-main").append(edithtml);
             }
 
             //添加消息
             function addmsg(msg,nickname) {
+                var nowname = localStorage.getItem("username");
                 //判断是不是自己发的信息
-                if ( nickname === name ){
+                if ( nickname === nowname ){
                     var msghtml = '<div class="msgline mine"><div class="msg-tx">' + nickname + '</div><div class="msg-b">' + msg + '</div></div>';
                 }
                 else{
@@ -117,6 +152,7 @@
                 //console.log(scrollHeight);
                 $('.chat-main').scrollTop(scrollHeight,200);
             }
+
 
         })
 

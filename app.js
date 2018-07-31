@@ -9,6 +9,7 @@ var io = require("socket.io")(http);
 var port = (process.env.PORT || 8021);
 
 var usocket = []; //用户名
+var ediuser = [];  //修改的用户
 
 //静态文件加载
 app.use('/public', express.static('public'));
@@ -25,6 +26,13 @@ io.on('connection', function(socket){
         usocket[name] = socket;
         io.emit("join", name);   //服务端通过广播将新用户发送给全体群聊成员
         //console.log(usocket);
+    })
+
+    //修改昵称
+    socket.on("editname",function (newname,name) {
+        //ediuser[newname] = socket;
+        io.emit("editname", {newname,name});   //服务端通过广播将新用户发送给全体群聊成员
+        console.log(newname,name);
     })
 
     //监听消息
