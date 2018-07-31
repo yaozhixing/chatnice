@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>nodejs 聊天室搭建</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+    <link href="/public/css/index.css" rel=stylesheet>
+    <script src="/public/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="chat-wrap">
+    <div class="chat-top">瞎扯淡聊天室</div>
+
+    <div class="chat-main">
+
+    </div>
+
+    <div class="chat-bot">
+        <div class="chat-text"><textarea class="f-text"></textarea></div>
+        <p class="chat-sub"><input class="f-submit" type="button" value="发送"></p>
+    </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(function () {
+            var socket = io();
+            var localname = localStorage.getItem("username");       //把用户名存储到localStorage里面，防止每次进入页面都要输入用户名
+            //如果本地有用户名，就用本地，否则就弹出确认框输入用户名；
+            if( localname =='' || localname == null ){
+                var name = prompt("请输入你的昵称：");
+                localStorage.setItem("username",name);
+            }
+            else{
+                var name = localStorage.getItem("username");
+            }
+
+            //发送昵称
+            socket.emit("join", name);
+            document.title = name + "的群聊！";
+            
+            //收到服务端发来的事件
+            socket.on("join", function (user) {
+                adduser( user );
+            })
+
+            //发送消息 - 事件
+            $(".chat-bot").on("click",".f-submit",function () {
+                sendmsg();
+            })
+            //回车
+            $(".f-text").keyup(function (ev) {
+                var ev = event || window.event;
+                if (ev.keyCode == 13){
+                    //不兼容  富文本框为空的判断
+                    var value = $(this).val();
+                    if (value <= 0){
+                        $(".f-text").val("");
+                        alert("请输入您要发送的信息！");
+                        return false;
+                    }
+                    else{
+                        sendmsg();
+                    }
+                }
+            })
+
+
+            //发送验证消息
+            function sendmsg(){
+                var text = $(".f-text").val();
+                if (text == ''){
+                    alert("请输入您要发送的信息！");
+                    $(".f-text").focus();
+                    return;
+                }
+                //将消息发送给服务器
+                socket.emit("msg", {text,name});
+                $(".f-text").val("");
+            }
+
+            //收到服务器-发送消息事件
+            socket.on("msg",function (res) {
+                addmsg(res.msg.text,res.msg.name);
+            })
+
+
+            //添加用户
+            function adduser(user) {
+                var userhtml = '<div class="join-chat">' + user + '加入了群聊</div>';
+                $(".chat-main").append(userhtml);
+            }
+
+            //添加消息
+            function addmsg(msg,nickname) {
+                //判断是不是自己发的信息
+                if ( nickname === name ){
+                    var msghtml = '<div class="msgline mine"><div class="msg-tx">' + nickname + '</div><div class="msg-b">' + msg + '</div></div>';
+                }
+                else{
+                    var msghtml = '<div class="msgline"><div class="msg-tx">' + nickname + '</div><div class="msg-b">' + msg + '</div></div>';
+                }
+
+                $(".chat-main").append(msghtml);
+            }
+
+        })
+
+
+    </script>
+</div>
+</body>
+</html>
